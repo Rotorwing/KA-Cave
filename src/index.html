@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cave</title>
+
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+
+</head>
+<body>
+
+    <canvas id="renderCanvas"></canvas>
+
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/spectorjs@0.9.30/dist/spector.bundle.js"></script>
+
+    <script src="/src/WorkerPool.js"></script>
+    <script src="/src/MarchingTable.js"></script>
+    <script src="/src/MarchingCubes.js"></script>
+
+    <!-- Shaders -->
+    <script src="/src/shaderTools.js"></script>
+    <script src="/src/VolumeComputeShader.js"></script>
+    <script src="/src/GIShader.js"></script>
+    <script src="/src/GenerationShader.js"></script>
+    <script src="/src/shaders/scatteringShader.js"></script>
+
+    <!-- Plugins -->
+    <script src="/src/HDGIPlugin.js"></script>
+    <script src="/src/TriPlaner.js"></script>
+
+    <!-- <script src="/src/GenerationShader.js"></script> -->
+    <script src="/src/GPUCaveGeneration.js"></script>
+    <script src="/src/cubeProbe.js"></script>
+
+    <script src="/src/Scattering.js"></script>
+    <!-- <script src="/src/cavegen.js"></script> -->
+    <script src="/src/Camera3rd.js"></script>
+    <script src="/src/Drone.js"></script>
+    <script src="/src/game.js"></script>
+    <script src="/src/main.js"></script>
+    <!-- <script src="/src/giTesting.js"></script> -->
+</body>
+</html>
