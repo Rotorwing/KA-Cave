@@ -191,12 +191,12 @@ engine.runRenderLoop(function () {
     // giShader.draw();
     
     moveVector.set(0, 0, 0);
-    if(keys["w"]){moveVector.z = moveSpeed;
-    }if(keys["s"]){ moveVector.z = -moveSpeed;
-    }if(keys["a"]){ moveVector.x = -moveSpeed;
-    }if(keys["d"]){ moveVector.x = moveSpeed;
-    }if(keys[" "]){ moveVector.y = moveSpeed;
-    }if(keys["shift"]){ moveVector.y = -moveSpeed;
+    if(keys["w"]){moveVector.z += moveSpeed;
+    }if(keys["s"]){ moveVector.z += -moveSpeed;
+    }if(keys["a"]){ moveVector.x += -moveSpeed;
+    }if(keys["d"]){ moveVector.x += moveSpeed;
+    }if(keys[" "]){ moveVector.y += moveSpeed;
+    }if(keys["shift"]){ moveVector.y += -moveSpeed;
     }
     drone.control(moveVector);
     drone.update();
