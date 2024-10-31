@@ -1,19 +1,19 @@
-const canvas = document.getElementById("renderCanvas");
+var canvas = document.getElementById("renderCanvas");
 
-const gl = document.createElement("canvas").getContext("webgl2");
+var gl = document.createElement("canvas").getContext("webgl2");
 document.body.appendChild(gl.canvas);
 gl.canvas.style.width = "100%";
 
-const engine = new BABYLON.Engine(canvas,true);
-const scene = new BABYLON.Scene(engine);
+var engine = new BABYLON.Engine(canvas,true);
+var scene = new BABYLON.Scene(engine);
 
-const cave = new GPUCaveGeneration(scene, gl);
-const game = new Game(scene, engine);
+var cave = new GPUCaveGeneration(scene, gl);
+var game = new Game(scene, engine);
 
-const drone = new Drone(scene);
+var drone = new Drone(scene);
 
 
-const giShader = new GIShader(gl, cave.mapDimensions);
+var giShader = new GIShader(gl, cave.mapDimensions);
 
 let dummyTextureDataRGBA = new Uint8Array(cave.mapDimensions.x * cave.mapDimensions.y*cave.mapDimensions.z*4);
 for(let i = 0; i < dummyTextureDataRGBA.length; i++){
@@ -40,7 +40,7 @@ for(let i = 0; i < dummyTextureDataG.length; i++){
 
 // cave.generate();
 
-spector.captureCanvas(gl.canvas)
+// spector.captureCanvas(gl.canvas)
 
 // requestAnimationFrame(function loop(){
 
@@ -102,7 +102,7 @@ game.sunShadowGenerator.getShadowMap().setMaterialForRendering(cave.marchedMesh,
 
 game.water.material.reflectionTexture.renderList.push(cave.marchedMesh);
 
-const ssao = new BABYLON.SSAORenderingPipeline("ssaopipeline", scene, 0.75, game.camera);
+var ssao = new BABYLON.SSAORenderingPipeline("ssaopipeline", scene, 0.75, game.camera);
 
 var defaultPipeline = new BABYLON.DefaultRenderingPipeline("default", true, scene, [scene.activeCamera]);
 defaultPipeline.bloomEnabled = true;
@@ -185,8 +185,8 @@ function changeCallback(e){
     }
 }
 
-const moveVector = new BABYLON.Vector3(0, 0, 0);
-const moveSpeed = 0.01;
+var moveVector = new BABYLON.Vector3(0, 0, 0);
+var moveSpeed = 0.01;
 engine.runRenderLoop(function () {
     // giShader.draw();
     
