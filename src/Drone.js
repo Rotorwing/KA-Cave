@@ -1,5 +1,6 @@
 /**
  * @import {BABYLON} from 'babylonjs';
+ * @import {OBJFileLoader} from 'babylonjs';
  */
 class Drone extends BABYLON.TransformNode{
     constructor(scene) {
@@ -29,6 +30,21 @@ class Drone extends BABYLON.TransformNode{
         this.mesh = BABYLON.MeshBuilder.CreateBox("DroneMesh", {size: 1}, scene);
         this.mesh.parent = this;
         this.mesh.receiveShadows = true;
+
+        // BABYLON.appendSceneAsync(window.drone2Glb, scene, { pluginExtension: ".glb" }).then((function(e){
+        // BABYLON.appendSceneAsync("/src/models/drone1.obj", scene, { pluginExtension: ".obj" }).then((function(e){
+        
+        BABYLON.appendSceneAsync(window.drone1Obj, scene, { pluginExtension: ".obj" }).then((function(e){
+            this.mesh.dispose();
+            this.mesh = this._scene.getNodeByName("DroneRoot");
+            let rotors = this._scene.getNodeByName("DroneRotors");
+            let rims = this._scene.getNodeByName("DroneRims");
+            console.log(rotors.material);
+            this.mesh.addChild(rotors);
+            this.mesh.addChild(rims);
+            this.mesh.parent = this;
+            this.mesh.receiveShadows = true;
+        }).bind(this));
     }
 
     setMouseValues(x, y) {
@@ -59,6 +75,14 @@ class Drone extends BABYLON.TransformNode{
 
         this.rotation.y += this.angularVelocity;
 
+        this.applyWorldMatrix()
+    }
+    setPosition(position){
+        this.position = position;
+        this.applyWorldMatrix();
+
+    }
+    applyWorldMatrix(){
         this.getWorldMatrix().copyFrom(new BABYLON.Matrix.Compose(this.scaling, BABYLON.Quaternion.FromEulerAngles(this.rotation), this.position));
     }
 }

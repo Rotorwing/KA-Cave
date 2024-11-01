@@ -77,6 +77,18 @@ def pack_images(path, images):
             
             file_index+=1
 
+def pack_models(path, models):
+    for filename in models:
+        encoded_string = ""
+        with open(path+filename, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode()
+    
+        base_name = filename.split(".")[0]+filename.split(".")[1].capitalize()
+        var_name = base_name.replace("-", "")
+        new_filename = base_name+".js"
+        with open(path+new_filename, "w") as js_file:
+            js_file.write("window."+var_name+' = "data:;base64,'+encoded_string+'";')
+
 if __name__ == "__main__":
 
     shader_path = "src/shaders/"
@@ -85,7 +97,11 @@ if __name__ == "__main__":
     # pack_shaders(shader_path, shader_files)
 
     image_path = "src/imgs/"
-    image_files = ["Rock035_4K-JPG_Color2.jpg", "Rock035_4K-JPG_NormalGL.jpg", "testImg.js"]
+    image_files = ["Rock035_4K-JPG_Color2.jpg", "Rock035_4K-JPG_NormalGL.jpg", "testImg.jpeg"]
 
-    pack_images(image_path, image_files)
+    # pack_images(image_path, image_files)
+
+    model_path = "src/models/"
+    model_files = ["drone1.obj", "drone1.mtl", "drone2.glb"]
+    pack_models(model_path, model_files)
 

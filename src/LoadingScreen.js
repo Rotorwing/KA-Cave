@@ -12,7 +12,7 @@ class LoadingScreen{
             this.tasks[name] = value;
             this._updateTextField()
             this._saveFromRemoval(name);
-            console.warn("ADD", name, value)
+            // console.warn("ADD", name, value)
         }).bind(this), 0);
     }
     removeTask(name){
@@ -23,14 +23,14 @@ class LoadingScreen{
                 this._updateTextField();
             }
         }).bind(this), this.removeTimeout);
-        console.warn("REMOVE", name)
+        // console.warn("REMOVE", name)
     }
     updateTask(name, value){
         setTimeout((function(){
             this.tasks[name] = value;
             this._updateTextField();
             this._saveFromRemoval(name);
-            console.warn("UPDATE", name, value)
+            // console.warn("UPDATE", name, value)
         }).bind(this), 0);
     }
     _updateTextField(){

@@ -10,26 +10,92 @@ class Game{
     constructor(scene, engine){
         this.scene = scene;
         this.engine = engine;
-        this.loadScene();
 
-        // this.camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 10, BABYLON.Vector3.Zero(), this.scene);
-        // this.camera = new BABYLON.FlyCamera("FlyCamera", new BABYLON.Vector3(0, 5, -10), this.scene);
+        this.settings = {
+            scatteringEnabled: true,
+            caveSize: 128,
+            ssaoEnabled: true,
+            fxaaEnabled: true,
+            bloomEnabled: true,
+            waterReflectionsEnabled: true
+        }
+
+        this.scene.clearColor = new BABYLON.Color3(0.9, 0.95, 1.0);
+
+        this.caveSize = Math.min(window.caveSize, gl.getParameter(gl.MAX_3D_TEXTURE_SIZE));
+        this.caveDimensions = {x: caveSize, y: caveSize, z:64};
+        this.cave = new GPUCaveGeneration(scene, gl, caveDimensions);
+
+
+        this.drone = new Drone(scene);
+        this.droneMoveVector = new BABYLON.Vector3(0, 0, 0);
+        this.droneMoveSpeed = 0.01;
+        this.drone.setPosition(new BABYLON.Vector3(20, 15, 20));
+
+
+        this.giShader = new GIShader(gl, this.cave.mapDimensions, caveDimensions);
+    }
+    setup(){
+        this.addLights();
+        this.loadSceneGeometry();
+
+        this.generateCaveVoxels();
+        this.generateGi();
+        this.generateCaveMesh();
+        this.addRenderingPipeline();
+    }
+    generateCaveVoxels(){
+        this.cave.generate();
+    }
+    generateCaveMesh(){
+        this.cave.createMarchingCubesMesh(this.oneCaveLoad.bind(this));
+
+        this.cave.marchedMesh.scaling = this.cave.marchedMesh.scaling.scale(5);
+        this.cave.marchedMesh.checkCollisions = true;
+        this.sunShadowGenerator.addShadowCaster(this.cave.marchedMesh);
+        this.cave.marchedMesh.receiveShadows = true;
+        let shadowMat = new BABYLON.StandardMaterial("shadowMat", this.scene);
+        shadowMat.backFaceCulling = false;
+        this.sunShadowGenerator.getShadowMap().setMaterialForRendering(this.cave.marchedMesh, shadowMat);
+
+    }
+    generateGi(){
+        this.giShader.loadOccupancyData(this.cave.occupancyMap);
+
+        this.giShader.shaderSetup();
+        this.giShader.draw();
+
+        for(let i = 0; i < 2; i++){
+            this.giShader.draw();
+        }
+        this.cave.setVoxelLighting(this.giShader.getOutputData());
+    }
+    generateScattering(){
+        this.scattering = new Scattering(this.scene, this.drone.camera3rd, this.sun, this.sunShadowGenerator);
+        this.scattering.addShadowMesh(this.cave.marchedMesh);
+        this.scattering.calculateScattering();
+    }
+    oneCaveLoad(){
+        this.refreshShadowMap();
+        if(this.settings.scatteringEnabled) {
+            this.generateScattering();
+        }
+
+        window.setupPointerLock();
+    }
+    createCamera(){
         this.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 5, -10), this.scene);
         this.camera.attachControl(this.engine.getRenderingCanvas(), true);
         this.camera.maxZ = 500;
         this.camera.minZ = 0.5;
-        this.scene.clearColor = new BABYLON.Color3(0.9, 0.95, 1.0);
         this.camera.fov = 1;
 
 
         this.scene.collisionsEnabled = true;
         this.camera.checkCollisions = true;
         this.camera.ellipsoid = new BABYLON.Vector3(1.0, 1.0, 1.0);
-        // this.camera.min = 0.1;
     }
-
-    loadScene(){
-        // Load your scene here
+    addLights(){
         const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0.8, 1.5, 0.25), this.scene);
         light.intensity = 0.1;
         this.sun = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(-0.8, -1.5, -0.25), this.scene);
@@ -45,33 +111,64 @@ class Game{
         this.sunShadowGenerator.usePoissonSampling = true;
         this.sunShadowGenerator.getShadowMap().refreshRate = BABYLON.RenderTargetTexture.REFRESHRATE_RENDER_ONCE;
         
-        
+    }
+    addRenderingPipeline(){
+        if(this.settings.ssaoEnabled){
+            this.ssaoPipeline = new BABYLON.SSAORenderingPipeline("ssaopipeline", this.scene, 0.75, this.scene.activeCamera);
+        }
+        if(this.settings.fxaaEnabled || this.settings.bloomEnabled){
+            var defaultPipeline = new BABYLON.DefaultRenderingPipeline("default", true, this.scene, [this.scene.activeCamera]);
+            defaultPipeline.bloomEnabled = this.settings.bloomEnabled;
+            defaultPipeline.fxaaEnabled = this.settings.fxaaEnabled;
 
-        const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2}, this.scene);
-        this.sunShadowGenerator.addShadowCaster(sphere);
-        sphere.position.y = 1;
-        // const cube = BABYLON.MeshBuilder.CreateBox("box", {size: 1}, this.scene);
-        // sphere.position.y = 1;
-        this.water = BABYLON.MeshBuilder.CreateGround("ground", {width: 50, height: 50}, this.scene);
+            defaultPipeline.bloomWeight = 0.1;
+            defaultPipeline.bloomKernel = 32;
+            defaultPipeline.bloomThreshold = 0.92
+            defaultPipeline.cameraFov = this.scene.activeCamera.fov;
+        }
+    }
+
+    loadSceneGeometry(){
+        this.water = BABYLON.MeshBuilder.CreateGround("water", {width: 50, height: 50}, this.scene);
         this.water.position = new BABYLON.Vector3(40, 12.5, 40);
-        // this.ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 50, height: 50}, this.scene);
-        // this.ground.position = new BABYLON.Vector3(0, -1, 0);
         this.water.receiveShadows = true;
 
-        var waterMaterial = new BABYLON.StandardMaterial("water", scene);
-        waterMaterial.reflectionTexture = new BABYLON.MirrorTexture("water", 1024, scene, true);
-		waterMaterial.reflectionTexture.mirrorPlane = BABYLON.Plane.FromPositionAndNormal(this.water.position, new BABYLON.Vector3.Down());
-		waterMaterial.reflectionTexture.renderList = [sphere];
-		waterMaterial.reflectionTexture.level = 0.9;
-        waterMaterial.reflectionTexture.get
+        var waterMaterial = new BABYLON.StandardMaterial("water", this.scene);
+
+        if(this.settings.waterReflectionsEnabled){
+            waterMaterial.reflectionTexture = new BABYLON.MirrorTexture("water", 1024, this.scene, true);
+            waterMaterial.reflectionTexture.mirrorPlane = BABYLON.Plane.FromPositionAndNormal(this.water.position, new BABYLON.Vector3.Down());
+            waterMaterial.reflectionTexture.level = 0.9;
+            waterMaterial.reflectionTexture.renderList.push(this.cave.marchedMesh);
+            waterMaterial.reflectionTexture.renderList.push(this.drone.mesh);
+        }
         waterMaterial.diffuseColor = new BABYLON.Color3(10/255, 12/255, 12/255);
         waterMaterial.specularPower = 64;
         waterMaterial.alpha = 0.5
 
+
         this.water.material = waterMaterial;
     }
-    update(){
+    refreshShadowMap(){
+        this.sunShadowGenerator.getShadowMap().refreshRate = BABYLON.RenderTargetTexture.REFRESHRATE_RENDER_ONCE;
+    }
+    update(keys){
         this.water.position.x = scene.activeCamera.position.x;
         this.water.position.z = scene.activeCamera.position.z;
+
+        this.moveDrone(keys);
+        this.drone.update();
+    }
+
+    moveDrone(keys){
+        this.droneMoveVector.set(0, 0, 0);
+        if(keys["w"]){this.droneMoveVector.z += this.droneMoveSpeed;
+        }if(keys["s"]){ this.droneMoveVector.z += -this.droneMoveSpeed;
+        }if(keys["a"]){ this.droneMoveVector.x += -this.droneMoveSpeed;
+        }if(keys["d"]){ this.droneMoveVector.x += this.droneMoveSpeed;
+        }if(keys[" "]){ this.droneMoveVector.y += this.droneMoveSpeed;
+        }if(keys["shift"]){ this.droneMoveVector.y += -this.droneMoveSpeed;
+        }
+        this.drone.control(this.droneMoveVector);
     }
 }

@@ -6,6 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cave</title>
 
+    <script>
+        window.customSettings = {
+            scatteringEnabled: true,
+            caveSize: 128,
+            ssaoEnabled: true,
+            fxaaEnabled: true,
+            bloomEnabled: true,
+            waterReflectionsEnabled: true
+        }
+    </script>
+
     <style>
         html, body {
             overflow: hidden;
@@ -20,14 +31,14 @@
             height: 100%;
             touch-action: none;
         }
-        #loadingScreen{
+        #loadingScreen, #optionsScreen{
             position: absolute;
             top:0;
             right:0;
             bottom: 0;
             left: 0;
             background-color: whitesmoke;
-            z-index: 50;
+            z-index: 10;
             text-align: center;
         }
         #loadingTitle{
@@ -48,12 +59,42 @@
             top:50%;
             text-align: left;
         }
+
+        #optionsScreen{
+            display: none;
+            z-index: 15;
+        }
+        #optionsScreenInset{
+            font-size: 1em;
+            font-family: monospace;
+            width: auto;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            top:50%;
+            text-align: center;
+        }
     </style>
 
 </head>
 <body>
 
     <canvas id="renderCanvas"></canvas>
+
+    <div id="optionsScreen">
+        <div id="optionsScreenInset">
+            <div id="optionsScreenQualityTitle">
+                Choose Graphics Quality:
+            </div>
+            <select id="graphicsQuality">
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+                <option value="Low">Custom</option>
+              </select>
+            <button id="startBtn">Start</button>
+        </div>
+    </div>
 
     <div id="loadingScreen">
         <div id="loadingTitle">LOADING...</div>
@@ -105,6 +146,11 @@
     <script src="/src/imgs/Rock035_4K-JPG_NormalGL1.js"></script>
     <script src="/src/imgs/Rock035_4K-JPG_NormalGL2.js"></script>
     <script src="/src/imgs/testImg.js"></script>
+
+    <!-- Packed Models -->
+    <script src="/src/models/drone1Mtl.js"></script>
+    <script src="/src/models/drone1Obj.js"></script>
+    <script src="/src/models/drone2Glb.js"></script>
     
 
     <!-- Plugins -->
