@@ -21,21 +21,20 @@ class Game{
         }
 
         this.scene.clearColor = new BABYLON.Color3(0.9, 0.95, 1.0);
+        this.scene.ambientColor = new BABYLON.Color3(0.27, 0.24, 0.22).scale(1.);
 
         this.caveSize = Math.min(window.caveSize, gl.getParameter(gl.MAX_3D_TEXTURE_SIZE));
         this.caveDimensions = {x: caveSize, y: caveSize, z:64};
         this.cave = new GPUCaveGeneration(scene, gl, caveDimensions);
 
 
-        this.drone = new Drone(scene);
-        this.droneMoveVector = new BABYLON.Vector3(0, 0, 0);
-        this.droneMoveSpeed = 0.01;
-        this.drone.setPosition(new BABYLON.Vector3(20, 15, 20));
+        
 
 
         this.giShader = new GIShader(gl, this.cave.mapDimensions, caveDimensions);
     }
     setup(){
+        this.createDrone();
         this.addLights();
         this.loadSceneGeometry();
 
@@ -43,6 +42,12 @@ class Game{
         this.generateGi();
         this.generateCaveMesh();
         this.addRenderingPipeline();
+    }
+    createDrone(){
+        this.drone = new Drone(scene);
+        this.droneMoveVector = new BABYLON.Vector3(0, 0, 0);
+        this.droneMoveSpeed = 0.01;
+        this.drone.setPosition(new BABYLON.Vector3(20, 15, 20));
     }
     generateCaveVoxels(){
         this.cave.generate();
@@ -116,16 +121,26 @@ class Game{
         if(this.settings.ssaoEnabled){
             this.ssaoPipeline = new BABYLON.SSAORenderingPipeline("ssaopipeline", this.scene, 0.75, this.scene.activeCamera);
         }
-        if(this.settings.fxaaEnabled || this.settings.bloomEnabled){
-            var defaultPipeline = new BABYLON.DefaultRenderingPipeline("default", true, this.scene, [this.scene.activeCamera]);
-            defaultPipeline.bloomEnabled = this.settings.bloomEnabled;
-            defaultPipeline.fxaaEnabled = this.settings.fxaaEnabled;
+        // if(this.settings.fxaaEnabled || this.settings.bloomEnabled){
+            this.defaultPipeline = new BABYLON.DefaultRenderingPipeline("default", true, this.scene, [this.scene.activeCamera]);
+            this.defaultPipeline.bloomEnabled = this.settings.bloomEnabled;
+            this.defaultPipeline.fxaaEnabled = this.settings.fxaaEnabled;
 
-            defaultPipeline.bloomWeight = 0.1;
-            defaultPipeline.bloomKernel = 32;
-            defaultPipeline.bloomThreshold = 0.92
-            defaultPipeline.cameraFov = this.scene.activeCamera.fov;
-        }
+            this.defaultPipeline.bloomWeight = 0.1;
+            this.defaultPipeline.bloomKernel = 32;
+            this.defaultPipeline.bloomThreshold = 0.92
+            this.defaultPipeline.cameraFov = this.scene.activeCamera.fov;
+
+            // this.defaultPipeline.imageProcessing.exposure = 0.5
+            // this.defaultPipeline.imageProcessing.contrast = 0.9
+            var curve = new BABYLON.ColorCurves();
+            curve.midtonesExposure = -60;
+            curve.shadowsExposure = -10;
+            curve.highlightsExposure = 50;
+            this.defaultPipeline.imageProcessing.colorCurvesEnabled = true;
+            this.defaultPipeline.imageProcessing.colorCurves = curve;
+            
+        // }
     }
 
     loadSceneGeometry(){

@@ -1,7 +1,8 @@
 class HDGIPlugin extends BABYLON.MaterialPluginBase {
-    constructor(material, name, volumeDimensions, scaling) {
+    constructor(material, name, volumeDimensions, scaling, intensity) {
         super(material, name, 100, {
-            "DATA_SCALING": `vec3(${1/(volumeDimensions.x*scaling)}, ${1/(volumeDimensions.y*scaling)}, ${1/(volumeDimensions.z*scaling)})`
+            "DATA_SCALING": `vec3(${1/(volumeDimensions.x*scaling)}, ${1/(volumeDimensions.y*scaling)}, ${1/(volumeDimensions.z*scaling)})`,
+            "INTENSITY": intensity ?? 1
         });
         this._enable(true);
 
@@ -125,9 +126,9 @@ const vec3 DIRECTIONS[6] = vec3[6](
     lightSamples[5] = texture(ZNSampler, samplePosition);
 
     vec3 normal = normalize(vNormal);
-    mat3 TBNl = cotangent_frame(normal*normalScale, vPositionW, TBNUV, vTangentSpaceParams);
+    ${this._material.triPlanerPlugin ? `mat3 TBNl = cotangent_frame(normal*normalScale, vPositionW, TBNUV, vTangentSpaceParams);
     // normalW = perturbNormal(TBN, texture(bumpSampler, vBumpUV+uvOffset).xyz, vBumpInfos.y);
-    normal = perturbNormal(tangentSpace, triPlanarSample(bumpSampler, normalTW).xyz, vBumpInfos.y);
+    normal = perturbNormal(tangentSpace, triPlanarSample(bumpSampler, normalTW).xyz, vBumpInfos.y);` : ""}
     
     vec4 giColor = mixLightSamples(lightSamples, normal);
     // baseAmbientColor.rgb += giColor.rgb*0.5;
@@ -135,7 +136,7 @@ const vec3 DIRECTIONS[6] = vec3[6](
                 CUSTOM_LIGHT0_COLOR:`
 specularBase+=pow(mixLightSamples(lightSamples, reflect(viewDirectionW, normalW)).rgb, vec3(3.))*0.5;`,
                 CUSTOM_FRAGMENT_BEFORE_FOG:`
-color.rgb += baseColor.rgb*giColor.rgb*3.5;`
+color.rgb += baseColor.rgb*giColor.rgb*float(INTENSITY);`
             }
         }
     }

@@ -11,7 +11,7 @@ class Drone extends BABYLON.TransformNode{
         this.camera3rd.attachControl(scene.getEngine().getRenderingCanvas(), false);
         this.camera3rd.lockedTarget = this;
         // this.camera3rd.targetOffset = new BABYLON.Vector3(0, 1, 0);
-        this.camera3rd.cameraOffset = new BABYLON.Vector3(0, 0, -2);
+        this.camera3rd.cameraOffset = new BABYLON.Vector3(0, 0, 0);
         this.camera3rd.cameraCollisionMeshes = [];
         this.camera3rd.radius = 5;
         this.camera3rd.fov = 1.1;
@@ -31,6 +31,22 @@ class Drone extends BABYLON.TransformNode{
         this.mesh.parent = this;
         this.mesh.receiveShadows = true;
 
+        this.bodyMaterial = new BABYLON.StandardMaterial("DroneFrame", this.scene);
+        this.bodyMaterial.diffuseColor = new BABYLON.Color3(0.4, 0.4, 0.42);
+        this.bodyMaterial.roughness = 0.9;
+        this.bodyMaterial.ambientColor = new BABYLON.Color3(0.9, 0.9, 0.9);
+
+        // KhanImageLoader.LoadBase64Jpeg(window.Rock035_4KJPG_NormalGL, (function(texture){
+        //     this.bodyMaterial.bumpTexture = texture
+        this.bodyMaterial.giPlugin = new HDGIPlugin(this.bodyMaterial, "DroneFrameGIPlugin", window.game.cave.mapDimensions, window.game.cave.scaling, 5.0);
+        // }).bind(this));
+        
+        this.rotorMaterial = new BABYLON.StandardMaterial("DroneRotor", this.scene);
+        this.rotorMaterial.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+        this.rotorMaterial.alpha = 0.6;
+        this.rotorMaterial.roughness = 0.2;
+        this.rotorMaterial.ambientColor = new BABYLON.Color3(0.8, 0.8, 0.8);
+
         // BABYLON.appendSceneAsync(window.drone2Glb, scene, { pluginExtension: ".glb" }).then((function(e){
         // BABYLON.appendSceneAsync("/src/models/drone1.obj", scene, { pluginExtension: ".obj" }).then((function(e){
         
@@ -39,11 +55,24 @@ class Drone extends BABYLON.TransformNode{
             this.mesh = this._scene.getNodeByName("DroneRoot");
             let rotors = this._scene.getNodeByName("DroneRotors");
             let rims = this._scene.getNodeByName("DroneRims");
-            console.log(rotors.material);
+
+            let headlight = new BABYLON.SpotLight("DroneLight", new BABYLON.Vector3(-0.8, -0.2, 0), new BABYLON.Vector3(-1,-0.3,0), Math.PI*0.5, 7, this.scene)
+            headlight.intensity = 2;
+
+            headlight.parent = this.mesh;
+            this.mesh.material = this.bodyMaterial;
+            rims.material = this.bodyMaterial;
+            rotors.material = this.rotorMaterial;
+
             this.mesh.addChild(rotors);
             this.mesh.addChild(rims);
             this.mesh.parent = this;
+
+            this.mesh.position.x = 0.65;
+
             this.mesh.receiveShadows = true;
+            rims.receiveShadows = true;
+            rotors.receiveShadows = true;
         }).bind(this));
     }
 

@@ -94,12 +94,12 @@ if __name__ == "__main__":
     shader_path = "src/shaders/"
     shader_files = ["baseVolume.vert", "gi.frag", "dynamicGiHd.fragment.fx", "dynamicGiHd.vertex.fx", "alphaover.fragment.fx", "gen.frag", "scattering.fragment.fx", "debugVoxel.fragment.fx", "debugVoxel.vertex.fx"]
 
-    # pack_shaders(shader_path, shader_files)
+    pack_shaders(shader_path, shader_files)
 
     image_path = "src/imgs/"
     image_files = ["Rock035_4K-JPG_Color2.jpg", "Rock035_4K-JPG_NormalGL.jpg", "testImg.jpeg"]
 
-    # pack_images(image_path, image_files)
+    pack_images(image_path, image_files)
 
     model_path = "src/models/"
     model_files = ["drone1.obj", "drone1.mtl", "drone2.glb"]

@@ -68,7 +68,7 @@ class GPUCaveGeneration{
 
         this.marchedMeshMaterial = new BABYLON.StandardMaterial("marchedMesh", scene);
         if(true){//window["KAInfiniteLoopProtect"]){
-            let dummy_data = new Uint8Array(4096*4096*3)
+            // let dummy_data = new Uint8Array(4096*4096*3)
             // this.marchedMeshMaterial.bumpTexture = BABYLON.RawTexture.CreateRGBTexture(dummy_data, 4096, 4096);
             // this.marchedMeshMaterial.diffuseTexture = BABYLON.RawTexture.CreateRGBTexture(dummy_data, 4096, 4096);
             // this.marchedMeshMaterial.bumpTexture = new BABYLON.Texture("imgs/Rock035_4K-JPG_NormalGL.jpg", scene);
@@ -82,9 +82,11 @@ class GPUCaveGeneration{
             this.marchedMeshMaterial.diffuseTexture = new BABYLON.Texture("imgs/Rock035_4K-JPG_Color2.jpg", scene);
         }
         this.marchedMeshMaterial.roughness = 0.5;
-        this.marchedMeshMaterial.giPlugin = new HDGIPlugin(this.marchedMeshMaterial, "marchedMeshGIPlugin", this.mapDimensions, this.scaling);
+        this.marchedMeshMaterial.giPlugin = new HDGIPlugin(this.marchedMeshMaterial, "marchedMeshGIPlugin", this.mapDimensions, this.scaling, 4.5);
         this.marchedMeshMaterial.triPlanerPlugin = new TriPlanerPlugin(this.marchedMeshMaterial, "marchedMeshTriPlanerPlugin");
-
+        this.marchedMeshMaterial.ambientColor = new BABYLON.Color3(1, 1, 1);
+        this.marchedMeshMaterial.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+        this.marchedMeshMaterial.specularPower = 32;
 
         this.marchedMeshMaterial.backFaceCulling = true;
 

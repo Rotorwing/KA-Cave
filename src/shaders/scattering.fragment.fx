@@ -134,8 +134,8 @@ void main(void) {
     float lightDotView = dot(normalize(-lightDirection), normalize(cameraRay)); // compute the angle between the ray and the sun
     float scattering = ComputeScattering(lightDotView); // Compute the amount of back-scattering along the ray
     scattering *= 5.5; // Scale scattering
-    float density = 50.0; // Density of the dust (Future project: Make it use a voxel simulation to make moving fog?)
+    float density = 60.0; // Density of the dust (Future project: Make it use a voxel simulation to make moving fog?)
     float transmittance = exp(-gl_FragColor.r*density); // Calculate the transmittance
-    float scaledIntensity = gl_FragColor.a*0.2+0.8; // Calculate the amount that the noise texture changes the intensity
+    float scaledIntensity = gl_FragColor.a*0.2+0.9; // Calculate the amount that the noise texture changes the intensity
     gl_FragColor = vec4(lightColor*scattering*scaledIntensity, 1.0-transmittance);  // Combine it all together to get the color of the fragment
 }
