@@ -20,6 +20,34 @@
             height: 100%;
             touch-action: none;
         }
+        #loadingScreen{
+            position: absolute;
+            top:0;
+            right:0;
+            bottom: 0;
+            left: 0;
+            background-color: whitesmoke;
+            z-index: 50;
+            text-align: center;
+        }
+        #loadingTitle{
+            font-size: 4em;
+            font-family: sans-serif;
+            text-align: center;
+            width: 100%;
+            position: relative;
+            top:30%;
+        }
+        #loadingText{
+            font-size: 1em;
+            font-family: monospace;
+            width: 80%;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            top:50%;
+            text-align: left;
+        }
     </style>
 
 </head>
@@ -27,10 +55,21 @@
 
     <canvas id="renderCanvas"></canvas>
 
+    <div id="loadingScreen">
+        <div id="loadingTitle">LOADING...</div>
+        <div id="loadingText"></div>
+    </div>
+
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/spectorjs@0.9.30/dist/spector.bundle.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/gh/gchudnov/jpeg-asm@2.0.0/dist/jpegasm.js"></script>
+
+    <script src="/src/LoadingScreen.js"></script>
+
+    <script src="/src/KhanImageLoader.js"></script>
 
     <script src="/src/WorkerPool.js"></script>
     <script src="/src/MarchingTable.js"></script>
@@ -41,11 +80,30 @@
     <script src="/src/VolumeComputeShader.js"></script>
     <script src="/src/GIShader.js"></script>
     <script src="/src/GenerationShader.js"></script>
-    <script src="/src/shaders/scatteringShader.js"></script>
+
+    <!-- JS Packed Shaders -->
+    <script src="/src/shaders/baseVolumeVertShader.js"></script>
+    <script src="/src/shaders/giFragShader.js"></script>
+    <script src="/src/shaders/genFragShader.js"></script>
+
+    <script src="/src/shaders/dynamicGiHdFragmentShader.js"></script>
+    <script src="/src/shaders/dynamicGiHdVertexShader.js"></script>
+
+    <script src="/src/shaders/debugVoxelFragmentShader.js"></script>
+    <script src="/src/shaders/debugVoxelVertexShader.js"></script>
+
+    <script src="/src/shaders/scatteringFragmentShader.js"></script>
+    <script src="/src/shaders/alphaoverFragmentShader.js"></script>
+
+    <!-- JS Packed Textures -->
+    <script src="/src/imgs/Rock035_4K-JPG_Color2.js"></script>
+    <script src="/src/imgs/Rock035_4K-JPG_NormalGL.js"></script>
+    <script src="/src/imgs/testImg.js"></script>
+    
 
     <!-- Plugins -->
     <script src="/src/HDGIPlugin.js"></script>
-    <script src="/src/TriPlaner.js"></script>
+    <script src="/src/TriPlanerPlugin.js"></script>
 
     <!-- <script src="/src/GenerationShader.js"></script> -->
     <script src="/src/GPUCaveGeneration.js"></script>

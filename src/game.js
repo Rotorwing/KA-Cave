@@ -39,7 +39,7 @@ class Game{
         // sun.shadowMaxZ = 50;
         this.sun.autoCalcShadowZBounds = true;
 
-        this.sunShadowGenerator = new BABYLON.ShadowGenerator(1024, this.sun);
+        this.sunShadowGenerator = new BABYLON.ShadowGenerator(2048, this.sun);
         this.sunShadowGenerator.useCloseExponentialShadowMap = true;
         this.sunShadowGenerator.normalBias = 0.5
         this.sunShadowGenerator.usePoissonSampling = true;
@@ -52,7 +52,7 @@ class Game{
         sphere.position.y = 1;
         // const cube = BABYLON.MeshBuilder.CreateBox("box", {size: 1}, this.scene);
         // sphere.position.y = 1;
-        this.water = BABYLON.MeshBuilder.CreateGround("ground", {width: 80, height: 80}, this.scene);
+        this.water = BABYLON.MeshBuilder.CreateGround("ground", {width: 50, height: 50}, this.scene);
         this.water.position = new BABYLON.Vector3(40, 12.5, 40);
         // this.ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 50, height: 50}, this.scene);
         // this.ground.position = new BABYLON.Vector3(0, -1, 0);
@@ -69,5 +69,9 @@ class Game{
         waterMaterial.alpha = 0.5
 
         this.water.material = waterMaterial;
+    }
+    update(){
+        this.water.position.x = scene.activeCamera.position.x;
+        this.water.position.z = scene.activeCamera.position.z;
     }
 }

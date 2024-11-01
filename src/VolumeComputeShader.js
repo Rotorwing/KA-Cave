@@ -3,12 +3,12 @@ class VolumeComputeShader{
      * 
      * @param {WebGL2RenderingContext} gl 
      */
-    constructor(gl){
+    constructor(gl, size){
         this._gl = gl;
 
         this.layerAttachmentBatchSize = 4;
 
-        this.volumeDimensions = {x: 128, y: 128, z:16};
+        this.volumeDimensions = size ?? {x: 128, y: 128, z:16};
         this.inputDepth = 4;
         this.outputDepth = 4;
 
@@ -263,6 +263,7 @@ class VolumeComputeShader{
     _setDrawUniforms(){ }
 
     draw(){
+        window.loadingScreen.addTask("Computing GI...", "")
         this._gl.viewport(0, 0, this.volumeDimensions.x, this.volumeDimensions.y);
         this._gl.useProgram(this.shader);
 
@@ -322,6 +323,7 @@ class VolumeComputeShader{
             }
         }
 
+        window.loadingScreen.removeTask("Computing GI...")
         this._onDrawEnd();
     }
 

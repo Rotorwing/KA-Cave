@@ -16,10 +16,12 @@ class GenerationShader extends VolumeComputeShader{
             {
                 type: this._gl.VERTEX_SHADER,
                 path: "shaders/baseVolume.vert",
+                code: window.baseVolumeVertShader
             },
             {
                 type: this._gl.FRAGMENT_SHADER,
                 path: "shaders/gen.frag",
+                code: window.genFragShader
             },
         ];
 

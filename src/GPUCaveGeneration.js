@@ -1,9 +1,9 @@
 class GPUCaveGeneration{
-    constructor(scene, gl){
+    constructor(scene, gl, size){
         this.scene = scene;
         this.gl = gl;
 
-        this.mapDimensions = {x: 128, y: 128, z:64};
+        this.mapDimensions = size ?? {x: 128, y: 128, z:64};
         this.occupancyMap = new Float32Array(this.mapDimensions.x * this.mapDimensions.y*this.mapDimensions.z);
 
         this.genShader = new GenerationShader(gl, this.mapDimensions);
@@ -19,8 +19,10 @@ class GPUCaveGeneration{
         // this.voxelMaterial.disableLighting = true;
         // this.voxelMesh.material.emissiveColor = BABYLON.Color3.White();
 
+        BABYLON.Effect.ShadersStore["debugVoxelFragmentShader"] = window.debugVoxelFragmentShader;
+        BABYLON.Effect.ShadersStore["debugVoxelVertexShader"] = window.debugVoxelVertexShader;
         
-        this.voxelMaterial = new BABYLON.ShaderMaterial("shader", scene, "./shaders/debugVoxel", {
+        this.voxelMaterial = new BABYLON.ShaderMaterial("shader", scene, "debugVoxel", {
             attributes: ["position", "normal", "cellPosition"],
             uniforms: ["world", "worldView", "viewProjection", "DATA_SIZE"],
             samplers: ["XPSampler", "YPSampler", "ZPSampler", "XNSampler", "YNSampler", "ZNSampler"]
@@ -65,8 +67,20 @@ class GPUCaveGeneration{
         // this.marchedMeshMaterial.setTexture("ZNSampler", this.voxelMeshGITextureZN);
 
         this.marchedMeshMaterial = new BABYLON.StandardMaterial("marchedMesh", scene);
-        this.marchedMeshMaterial.bumpTexture = new BABYLON.Texture("imgs/Rock035_4K-JPG_NormalGL.jpg", scene);
-        this.marchedMeshMaterial.diffuseTexture = new BABYLON.Texture("imgs/Rock035_4K-JPG_Color2.jpg", scene);
+        if(true){//window["KAInfiniteLoopProtect"]){
+            let dummy_data = new Uint8Array(4096*4096*3)
+            // this.marchedMeshMaterial.bumpTexture = BABYLON.RawTexture.CreateRGBTexture(dummy_data, 4096, 4096);
+            // this.marchedMeshMaterial.diffuseTexture = BABYLON.RawTexture.CreateRGBTexture(dummy_data, 4096, 4096);
+            // this.marchedMeshMaterial.bumpTexture = new BABYLON.Texture("imgs/Rock035_4K-JPG_NormalGL.jpg", scene);
+            // this.marchedMeshMaterial.diffuseTexture = new BABYLON.Texture("imgs/Rock035_4K-JPG_Color2.jpg", scene);
+            // KhanImageLoader.LoadBase64Jpeg(window.testImg, (function(texture){this.marchedMeshMaterial.bumpTexture = texture}).bind(this)); //Rock035_4KJPG_NormalGL
+            // KhanImageLoader.LoadBase64Jpeg(window.testImg, (function(texture){this.marchedMeshMaterial.diffuseTexture = texture}).bind(this)); //Rock035_4KJPG_Color2
+            KhanImageLoader.LoadBase64Jpeg(window.Rock035_4KJPG_NormalGL, (function(texture){this.marchedMeshMaterial.bumpTexture = texture}).bind(this)); //Rock035_4KJPG_NormalGL
+            KhanImageLoader.LoadBase64Jpeg(window.Rock035_4KJPG_Color2, (function(texture){this.marchedMeshMaterial.diffuseTexture = texture}).bind(this)); //Rock035_4KJPG_Color2
+        }else{
+            this.marchedMeshMaterial.bumpTexture = new BABYLON.Texture("imgs/Rock035_4K-JPG_NormalGL.jpg", scene);
+            this.marchedMeshMaterial.diffuseTexture = new BABYLON.Texture("imgs/Rock035_4K-JPG_Color2.jpg", scene);
+        }
         this.marchedMeshMaterial.roughness = 0.5;
         this.marchedMeshMaterial.giPlugin = new HDGIPlugin(this.marchedMeshMaterial, "marchedMeshGIPlugin", this.mapDimensions, this.scaling);
         this.marchedMeshMaterial.triPlanerPlugin = new TriPlanerPlugin(this.marchedMeshMaterial, "marchedMeshTriPlanerPlugin");
@@ -193,26 +207,32 @@ class GPUCaveGeneration{
         console.log("Randomness step finished.");
     }
     _falloffFunction(z, falloff){
-        const center = this.mapDimensions.z*0.6;
+        const center = this.mapDimensions.z*0.55;
         return Math.pow(falloff, Math.abs(z-center)/this.mapDimensions.z*10+1);
     }
     _generationSimulate(properties){
+        window.loadingScreen.addTask("Simulation Step", "1");
         console.log("Starting simulation step...");
         for (let i = 0; i < properties.numberOfSteps; i++) {
             console.log(`Step ${i+1}/${properties.numberOfSteps}`);
+            window.loadingScreen.updateTask("Simulation Step", `${i+1}/${properties.numberOfSteps}`);
             this.genShader.loadOccupancyData(this.occupancyMap);
             this.genShader.compute(properties);
             this.genShader.copyOutputDataTo(this.occupancyMap);
         }
         console.log("Simulation step finished.");
+        window.loadingScreen.removeTask("Simulation Step");
     }
     generate(){
+        window.loadingScreen.addTask("Generation Phase", "started");
         for(let i = 0; i < this.generationProperties.length; i++){
+            window.loadingScreen.updateTask("Generation Phase", "("+i+") "+this.generationProperties[i].type);
             this._generationStep(this.generationProperties[i]);
         }
         for(let i = 0; i < this.occupancyMap.length; i++){
             this.occupancyMap[i] = 255-this.occupancyMap[i];
         }
+        window.loadingScreen.removeTask("Generation Phase");
         
     }
     createInstances(giLighting){

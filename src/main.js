@@ -4,16 +4,22 @@ var gl = document.createElement("canvas").getContext("webgl2");
 document.body.appendChild(gl.canvas);
 gl.canvas.style.width = "100%";
 
+window.loadingScreen = new LoadingScreen();
+
 var engine = new BABYLON.Engine(canvas,true);
 var scene = new BABYLON.Scene(engine);
 
-var cave = new GPUCaveGeneration(scene, gl);
+const caveSize = Math.min(256, gl.getParameter(gl.MAX_3D_TEXTURE_SIZE));
+const caveDimensions = {x: caveSize, y: caveSize, z:64};
+// cave_size = {x: gl.getParameter(gl.MAX_3D_TEXTURE_SIZE), y: gl.getParameter(gl.MAX_3D_TEXTURE_SIZE), z:128};
+
+var cave = new GPUCaveGeneration(scene, gl, caveDimensions);
 var game = new Game(scene, engine);
 
 var drone = new Drone(scene);
 
 
-var giShader = new GIShader(gl, cave.mapDimensions);
+var giShader = new GIShader(gl, cave.mapDimensions, caveDimensions);
 
 let dummyTextureDataRGBA = new Uint8Array(cave.mapDimensions.x * cave.mapDimensions.y*cave.mapDimensions.z*4);
 for(let i = 0; i < dummyTextureDataRGBA.length; i++){
@@ -101,6 +107,7 @@ game.sunShadowGenerator.getShadowMap().setMaterialForRendering(cave.marchedMesh,
 
 
 game.water.material.reflectionTexture.renderList.push(cave.marchedMesh);
+game.water.material.reflectionTexture.renderList.push(drone.mesh);
 
 var ssao = new BABYLON.SSAORenderingPipeline("ssaopipeline", scene, 0.75, game.camera);
 
@@ -200,6 +207,7 @@ engine.runRenderLoop(function () {
     }
     drone.control(moveVector);
     drone.update();
+    game.update();
     scene.render();
 }
 );
@@ -207,3 +215,5 @@ window.addEventListener("resize", function () {
     engine.resize();
 }
 );
+
+loadingScreen.hide();

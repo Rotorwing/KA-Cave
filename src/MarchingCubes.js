@@ -92,6 +92,7 @@ class MarchingCubes{
     }
 
     static generateMeshWithWorkers(width, height, depth, sampleFunction, scaling, callback){
+        window.loadingScreen.addTask("Mesh Generation", "Started")
         const chunkSize = 16;
         const chunks = [];
         for (let x = 0; x < width; x+=chunkSize-1) {
@@ -104,7 +105,7 @@ class MarchingCubes{
         let chunkIndex = 0;
         const results = [];
         const workerCallback = (data) => {
-            console.log("Worker Done.");
+            window.loadingScreen.updateTask("Mesh Generation", "workers done: "+results.length+"/"+chunks.length);
             results.push(data);
             if (results.length === chunks.length) { ///!!!!!!!!!!!!!!
                 let vertices = [];
@@ -117,6 +118,7 @@ class MarchingCubes{
                     chunkIndex += results[i].vertices.length / 3;
                 }
                 callback({vertices, indices});
+                window.loadingScreen.removeTask("Mesh Generation");
             }
         }
 

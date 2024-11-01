@@ -148,7 +148,7 @@ class Scattering{
         var postProcessBlur2 = new BABYLON.BlurPostProcess("Vertical blur", new BABYLON.Vector2(0, 1.0), kernel, 1.0, this.camera);
 
         // Layer the scattering texture with the normal render
-        const mergeProcess = new BABYLON.PostProcess('scatteringProcess', '/src/shaders/alphaOver', [],
+        const mergeProcess = new BABYLON.PostProcess('scatteringProcess', 'alphaOver', [],
                                                   ["baseTexture", "overTexture"], 1.0, this.camera, null, engine, true);
 
         mergeProcess.onApply = function (effect) {
@@ -171,7 +171,7 @@ class Scattering{
      */
     registerShaders(){
         BABYLON.Effect.ShadersStore["scatteringFragmentShader"] = window.scatteringFragmentShader;
-        BABYLON.Effect.ShadersStore["alphaOverFragmentShader"] = window.alphaOverFragmentShader;
+        BABYLON.Effect.ShadersStore["alphaOverFragmentShader"] = window.alphaoverFragmentShader;
     }
 
     
