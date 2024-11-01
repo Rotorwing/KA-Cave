@@ -1,5 +1,5 @@
 
-RELEASE = "1.0.3"
+RELEASE = "1.0.4"
 
 with open("src/index.html", "r") as file:
     content = file.read()

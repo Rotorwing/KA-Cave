@@ -23,17 +23,13 @@ class Game{
         this.scene.clearColor = new BABYLON.Color3(0.9, 0.95, 1.0);
         this.scene.ambientColor = new BABYLON.Color3(0.27, 0.24, 0.22).scale(1.);
 
-        this.caveSize = Math.min(window.caveSize, gl.getParameter(gl.MAX_3D_TEXTURE_SIZE));
-        this.caveDimensions = {x: caveSize, y: caveSize, z:64};
-        this.cave = new GPUCaveGeneration(scene, gl, caveDimensions);
-
-
-        
-
-
-        this.giShader = new GIShader(gl, this.cave.mapDimensions, caveDimensions);
     }
     setup(){
+        const caveSize = Math.min(this.settings.caveSize, gl.getParameter(gl.MAX_3D_TEXTURE_SIZE));
+        this.caveDimensions = {x: caveSize, y: caveSize, z:64};
+        this.cave = new GPUCaveGeneration(scene, gl, this.caveDimensions);
+        this.giShader = new GIShader(gl, this.caveDimensions);
+
         this.createDrone();
         this.addLights();
         this.loadSceneGeometry();
@@ -48,6 +44,13 @@ class Game{
         this.droneMoveVector = new BABYLON.Vector3(0, 0, 0);
         this.droneMoveSpeed = 0.01;
         this.drone.setPosition(new BABYLON.Vector3(20, 15, 20));
+
+        if(this.settings.waterReflectionsEnabled){
+            this.drone.onLoad = (function(){
+                this.water.material.reflectionTexture.renderList.push(this.drone.mesh);
+                this.water.material.reflectionTexture.renderList.push(...this.drone.mesh.getChildMeshes());
+            }).bind(this)
+        }
     }
     generateCaveVoxels(){
         this.cave.generate();
@@ -155,7 +158,7 @@ class Game{
             waterMaterial.reflectionTexture.mirrorPlane = BABYLON.Plane.FromPositionAndNormal(this.water.position, new BABYLON.Vector3.Down());
             waterMaterial.reflectionTexture.level = 0.9;
             waterMaterial.reflectionTexture.renderList.push(this.cave.marchedMesh);
-            waterMaterial.reflectionTexture.renderList.push(this.drone.mesh);
+            // waterMaterial.reflectionTexture.renderList.push(this.drone.mesh);
         }
         waterMaterial.diffuseColor = new BABYLON.Color3(10/255, 12/255, 12/255);
         waterMaterial.specularPower = 64;

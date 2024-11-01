@@ -6,14 +6,15 @@ class LoadingScreen{
         this.removeTimeout = 500;
 
         this.textField = document.getElementById("loadingText");
+        
     }
     addTask(name, value){
-        setTimeout((function(){
+        // setTimeout((function(){
             this.tasks[name] = value;
             this._updateTextField()
             this._saveFromRemoval(name);
             // console.warn("ADD", name, value)
-        }).bind(this), 0);
+        // }).bind(this), 0);
     }
     removeTask(name){
         this.scheduledToRemove.push(name);
@@ -26,14 +27,15 @@ class LoadingScreen{
         // console.warn("REMOVE", name)
     }
     updateTask(name, value){
-        setTimeout((function(){
+        // setTimeout((function(){
             this.tasks[name] = value;
             this._updateTextField();
             this._saveFromRemoval(name);
             // console.warn("UPDATE", name, value)
-        }).bind(this), 0);
+        // }).bind(this), 0);
     }
     _updateTextField(){
+        requestAnimationFrame((function(){
         let content = "";
         for (let task in this.tasks){
             if(this.tasks[task] != null){
@@ -41,6 +43,7 @@ class LoadingScreen{
             }
         }
         this.textField.innerText = content;
+        }).bind(this));
     }
     _saveFromRemoval(name){
         const dieIndex = this.scheduledToRemove.indexOf(name)

@@ -34,18 +34,18 @@ class Drone extends BABYLON.TransformNode{
         this.bodyMaterial = new BABYLON.StandardMaterial("DroneFrame", this.scene);
         this.bodyMaterial.diffuseColor = new BABYLON.Color3(0.4, 0.4, 0.42);
         this.bodyMaterial.roughness = 0.9;
-        this.bodyMaterial.ambientColor = new BABYLON.Color3(0.9, 0.9, 0.9);
+        this.bodyMaterial.ambientColor = new BABYLON.Color3(0.6, 0.6, 0.6);
 
         // KhanImageLoader.LoadBase64Jpeg(window.Rock035_4KJPG_NormalGL, (function(texture){
         //     this.bodyMaterial.bumpTexture = texture
-        this.bodyMaterial.giPlugin = new HDGIPlugin(this.bodyMaterial, "DroneFrameGIPlugin", window.game.cave.mapDimensions, window.game.cave.scaling, 5.0);
+        this.bodyMaterial.giPlugin = new HDGIPlugin(this.bodyMaterial, "DroneFrameGIPlugin", window.game.cave.mapDimensions, window.game.cave.scaling, 4.5);
         // }).bind(this));
         
         this.rotorMaterial = new BABYLON.StandardMaterial("DroneRotor", this.scene);
         this.rotorMaterial.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.2);
         this.rotorMaterial.alpha = 0.6;
         this.rotorMaterial.roughness = 0.2;
-        this.rotorMaterial.ambientColor = new BABYLON.Color3(0.8, 0.8, 0.8);
+        this.rotorMaterial.ambientColor = new BABYLON.Color3(0.4, 0.4, 0.4);
 
         // BABYLON.appendSceneAsync(window.drone2Glb, scene, { pluginExtension: ".glb" }).then((function(e){
         // BABYLON.appendSceneAsync("/src/models/drone1.obj", scene, { pluginExtension: ".obj" }).then((function(e){
@@ -73,7 +73,12 @@ class Drone extends BABYLON.TransformNode{
             this.mesh.receiveShadows = true;
             rims.receiveShadows = true;
             rotors.receiveShadows = true;
+
+            this.onLoad();
         }).bind(this));
+    }
+    onLoad(){
+
     }
 
     setMouseValues(x, y) {

@@ -20,7 +20,7 @@ var game = new Game(scene, engine);
 let presetSettings = {
     "High":{
         scatteringEnabled: true,
-        caveSize: 128,
+        caveSize: 256,
         ssaoEnabled: true,
         fxaaEnabled: true,
         bloomEnabled: true,
@@ -51,6 +51,7 @@ window.gameStarted = false;
 document.getElementById("startBtn").onclick = function(e){
     let value = document.getElementById("graphicsQuality").value
     document.getElementById("optionsScreen").style.display = "none";
+    document.getElementById("loadingScreen").style.display = "block";
     if(value == "Custom"){
         game.settings = window.customSettings;
     }else{

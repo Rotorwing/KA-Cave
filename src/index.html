@@ -94,6 +94,8 @@
               </select>
             <button id="startBtn">Start</button>
         </div>
+
+        <div>For A larger view, go here: https://www.khanacademy.org/computer-programming/procedural-cave-3d/5706880635551744?editor=no&width=1000&height=800</div>
     </div>
 
     <div id="loadingScreen">
@@ -167,6 +169,49 @@
     <script src="/src/Drone.js"></script>
     <script src="/src/game.js"></script>
     <script src="/src/main.js"></script>
-    <!-- <script src="/src/giTesting.js"></script> -->
+    <!-- <script src="/src/giTesting.js"></script> --><script>
+        
+function tumbnail(canvas){
+    document.body.style.margin="0";
+    document.body.style.overflow="hidden";
+        const sizer = document.createElement('div');
+        
+        sizer.id = "sizer";
+        sizer.style.position = "absolute";
+        sizer.style.top = "0";
+        sizer.style.bottom = "0";
+        sizer.style.left = "0";
+        sizer.style.right = "0";
+        // sizer.style.display = "none";
+        
+        document.body.appendChild(sizer);
+        const viewWidth = sizer.clientWidth;
+        const viewHeight = sizer.clientHeight;
+        
+        const tumbnailFrame = document.body.appendChild(document.createElement('CANVAS'));
+        tumbnailFrame.style.position = "absolute";
+        tumbnailFrame.style.top = "0";
+        tumbnailFrame.style.left = "0";
+        
+        console.log("view", viewWidth, viewHeight)
+        console.log("canvas", canvas.width, canvas.height);
+        tumbnailFrame.style.width ="100%";//= viewWidth+"px";
+        // tumbnailFrame.style.height = viewHeight;
+        tumbnailFrame.width = canvas.width;
+        tumbnailFrame.height = canvas.height;
+        var ctx = tumbnailFrame.getContext('2d');
+//         var imageData = ctx.createImageData(canvas.height, canvas.height);
+// imageData.data.set(data);
+// ctx.putImageData(imageData, 0, 0, 0, 0, canvas.width, canvas.height);
+ctx.drawImage(canvas, 0, 0);
+canvas.style.display="none"
+}
+// tumbnail();
+document.body.addEventListener("keydown", function(event) {
+    if(event.key=='t'){
+        tumbnail(canvas);
+    }
+});
+    </script>
 </body>
 </html>
