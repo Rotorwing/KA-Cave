@@ -20,11 +20,11 @@ class Drone extends BABYLON.TransformNode{
 
 
         this.velocity = new BABYLON.Vector3(0, 0, 0);
-        this.maxVelocity = new BABYLON.Vector3(0.1, 0.05, 0.1);
+        this.maxVelocity = new BABYLON.Vector3(5, 3, 5);
         this.drag = 0.9;
 
         this.angularVelocity = 0;
-        this.maxAngularVelocity = 0.05;
+        this.maxAngularVelocity = 3;
         this.targetHeading = 0;
 
         this.mesh = BABYLON.MeshBuilder.CreateBox("DroneMesh", {size: 1}, scene);
@@ -90,7 +90,7 @@ class Drone extends BABYLON.TransformNode{
         let _force = new BABYLON.Vector3();
         force.rotateByQuaternionToRef(new BABYLON.Quaternion.RotationAxis(BABYLON.Vector3.Up(), this.targetHeading-Math.PI/2), _force);
         // _force = force;
-        this.velocity.addInPlace(_force);
+        this.velocity.addInPlace(_force.scale(this._scene.getEngine().getDeltaTime()/1000));
 
         this.velocity.x = Math.min(Math.max(this.velocity.x, -this.maxVelocity.x), this.maxVelocity.x);
         this.velocity.y = Math.min(Math.max(this.velocity.y, -this.maxVelocity.y), this.maxVelocity.y);
@@ -98,16 +98,16 @@ class Drone extends BABYLON.TransformNode{
     }
     update() {
         this.camera3rd.update();
-        this.position.addInPlace(this.velocity);
+        this.position.addInPlace(this.velocity.scale(this._scene.getEngine().getDeltaTime()/1000));
         // console.log(this.position)
 
         this.velocity.scaleInPlace(this.drag);
 
-        this.angularVelocity = (this.targetHeading - this.rotation.y) * 0.5;
+        this.angularVelocity = (this.targetHeading - this.rotation.y) * 15;
         this.angularVelocity = this.angularVelocity*this.angularVelocity*Math.sign(this.angularVelocity);
         this.angularVelocity = Math.min(Math.max(this.angularVelocity, -this.maxAngularVelocity), this.maxAngularVelocity);
 
-        this.rotation.y += this.angularVelocity;
+        this.rotation.y += this.angularVelocity*this._scene.getEngine().getDeltaTime()/1000;
 
         this.applyWorldMatrix()
     }

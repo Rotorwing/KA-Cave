@@ -21,7 +21,7 @@ let presetSettings = {
     "High":{
         scatteringEnabled: true,
         caveSize: 256,
-        ssaoEnabled: true,
+        ssaoEnabled: false,
         fxaaEnabled: true,
         bloomEnabled: true,
         waterReflectionsEnabled: true
@@ -157,5 +157,3 @@ window.addEventListener("resize", function () {
     engine.resize();
 }
 );
-
-loadingScreen.hide();

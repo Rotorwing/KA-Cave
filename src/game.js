@@ -42,7 +42,7 @@ class Game{
     createDrone(){
         this.drone = new Drone(scene);
         this.droneMoveVector = new BABYLON.Vector3(0, 0, 0);
-        this.droneMoveSpeed = 0.01;
+        this.droneMoveSpeed = 40;
         this.drone.setPosition(new BABYLON.Vector3(20, 15, 20));
 
         if(this.settings.waterReflectionsEnabled){
@@ -90,6 +90,9 @@ class Game{
         }
 
         window.setupPointerLock();
+        
+        loadingScreen.hide();
+
     }
     createCamera(){
         this.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 5, -10), this.scene);
@@ -134,11 +137,11 @@ class Game{
             this.defaultPipeline.bloomThreshold = 0.92
             this.defaultPipeline.cameraFov = this.scene.activeCamera.fov;
 
-            // this.defaultPipeline.imageProcessing.exposure = 0.5
+            this.defaultPipeline.imageProcessing.exposure = 0.9
             // this.defaultPipeline.imageProcessing.contrast = 0.9
             var curve = new BABYLON.ColorCurves();
-            curve.midtonesExposure = -60;
-            curve.shadowsExposure = -10;
+            curve.midtonesExposure = -70;
+            curve.shadowsExposure = -80;
             curve.highlightsExposure = 50;
             this.defaultPipeline.imageProcessing.colorCurvesEnabled = true;
             this.defaultPipeline.imageProcessing.colorCurves = curve;
