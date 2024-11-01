@@ -9,7 +9,7 @@ window.loadingScreen = new LoadingScreen();
 var engine = new BABYLON.Engine(canvas,true);
 var scene = new BABYLON.Scene(engine);
 
-const caveSize = Math.min(256, gl.getParameter(gl.MAX_3D_TEXTURE_SIZE));
+const caveSize = Math.min(128, gl.getParameter(gl.MAX_3D_TEXTURE_SIZE));
 const caveDimensions = {x: caveSize, y: caveSize, z:64};
 // cave_size = {x: gl.getParameter(gl.MAX_3D_TEXTURE_SIZE), y: gl.getParameter(gl.MAX_3D_TEXTURE_SIZE), z:128};
 

@@ -2,6 +2,11 @@
 Packs GLSL Shader files into .js files for Khan Academy Support.
 """
 import base64
+from math import ceil
+
+global filesize_limit
+filesize_limit = 19 #MB
+filesize_limit_bytes = filesize_limit*1000000
 
 def pack_shaders(path, files):
     """Converts GLSL Shaders into Base64 stings stored in JS files"""
@@ -27,54 +32,50 @@ def pack_shaders(path, files):
             output+="\n`;"
             f.write(output)
 
-def pack_images(path, images):
-    """Converts images into Base64 stings stored in JS files"""
-    for filename in images:
-        encoded_string = ""
-        with open(path+filename, "rb") as image_file:
-            encoded_string = base64.b64encode(image_file.read())
-        
-        base_name = filename.split(".")[0]
-        new_filename = base_name+".js"
-        with open(path+new_filename, "w") as js_file:
-            js_file.write("window."+base_name.replace("-", "")+' = "'+encoded_string.decode()+'";')
-
-
-
-# global filesize_limit
-# filesize_limit = 10 #MB
-# filesize_limit_bytes = filesize_limit*1000000
-
 # def pack_images(path, images):
 #     """Converts images into Base64 stings stored in JS files"""
-#     global filesize_limit_bytes
 #     for filename in images:
 #         encoded_string = ""
 #         with open(path+filename, "rb") as image_file:
 #             encoded_string = base64.b64encode(image_file.read())
         
+#         base_name = filename.split(".")[0]
+#         new_filename = base_name+".js"
+#         with open(path+new_filename, "w") as js_file:
+#             js_file.write("window."+base_name.replace("-", "")+' = "'+encoded_string.decode()+'";')
+
+
+
+
+def pack_images(path, images):
+    """Converts images into Base64 stings stored in JS files"""
+    global filesize_limit_bytes
+    for filename in images:
+        encoded_string = ""
+        with open(path+filename, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode()
         
-#         num_files = ceil(len(encoded_string) / filesize_limit_bytes)
-#         needs_cut = True
-#         file_index = 0
-#         while needs_cut:
-#             base_name = filename.split(".")[0]
-#             new_filename = base_name+str(file_index)+".js" if num_files>1 else base_name+".js"
+        
+        num_files = ceil(len(encoded_string) / filesize_limit_bytes)
+        file_index = 0
+        while len(encoded_string) > 0:
+            base_name = filename.split(".")[0]
+            var_name = base_name.replace("-", "")
+            new_filename = base_name+str(file_index)+".js" if num_files>1 else base_name+".js"
 
-#             cut_index = min(filesize_limit_bytes, len(encoded_string)-1)
-#             segment = encoded_string[:cut_index]
-#             encoded_string = encoded_string[cut_index:]
+            cut_index = min(filesize_limit_bytes, len(encoded_string))
+            segment = encoded_string[:cut_index]
+            encoded_string = encoded_string[cut_index:]
 
-#             content = ""
-#             if file_index == 0: content+="window."+base_name+' = [];\n'
-#             content+="window."+base_name+'.push(")'+segment+
+            content = ""
+            if file_index == 0: content+="window."+var_name+' = [];\n'
+            content+="window."+var_name+'.push("'+segment+'");'
 
 
-#             with open(path+new_filename, "w") as js_file:
-#                 js_file.write("window."+base_name+' = "'+encoded_string.decode().replace("-", "")+'";')
+            with open(path+new_filename, "w") as js_file:
+                js_file.write(content)
             
-#             needs_cut = len(encoded_string) > filesize_limit_bytes
-#             file_index+=1
+            file_index+=1
 
 if __name__ == "__main__":
 

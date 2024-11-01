@@ -1,9 +1,13 @@
 class KhanImageLoader{
 
     static LoadBase64Jpeg(base64, callback){
+        let _base64 = base64;
+        if(Array.isArray(base64)){
+            _base64 = base64.join("");
+        }
 
         // Convert Base64 to bytes:
-        var binaryImg = atob(base64);
+        var binaryImg = atob(_base64);
         var dataLength = binaryImg.length;
         var ab = new ArrayBuffer(dataLength);
         var ua = new Uint8Array(ab);
